@@ -1,15 +1,23 @@
 import React, { useEffect, useState } from "react";
+import Model from "../../Model/Model";
 import SingleData from "../../SingleData/SingleData";
 import Buttun from "../Button/Buttun";
 
 const Cart = () => {
   const [data, setData] = useState([]);
+  const [singleData, setSingleData] = useState({});
   const [showAll, setShowAll] = useState(false);
+  const [uniqueId, setUniqueId] = useState(null);
 
   const handleShowAll = () => {
     setShowAll(true);
   };
 
+  useEffect(() => {
+    fetch(`https://openapi.programming-hero.com/api/ai/tool/${uniqueId}`)
+      .then((res) => res.json())
+      .then((data) => setSingleData(data.data));
+  }, [uniqueId]);
   useEffect(() => {
     const loadData = async () => {
       const res = await fetch(
@@ -27,15 +35,20 @@ const Cart = () => {
         {data.slice(0, showAll ? 12 : 6).map((singleData) => {
           // console.log(singleData);
           return (
-            <SingleData data={singleData} key={singleData.id}></SingleData>
+            <SingleData
+              data={singleData}
+              setUniqueId={setUniqueId}
+              key={singleData.id}
+            ></SingleData>
           );
         })}
       </div>
       {!showAll && (
-        <span onClick={handleShowAll}>
+        <label onClick={handleShowAll}>
           <Buttun>See More</Buttun>
-        </span>
+        </label>
       )}
+      <Model singleData={singleData}></Model>
     </>
   );
 };
